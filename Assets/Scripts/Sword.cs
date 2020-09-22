@@ -4,13 +4,32 @@ using UnityEngine;
 
 public class Sword : MonoBehaviour
 {
+    public Animator animator;
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
     public void Attack()
     {
-        Debug.Log("Attacking");
+        animator.SetTrigger("espadazo");
+    }
+
+    public void HorizontalAttack()
+    {
+        animator.SetTrigger("espadazo_hor");
     }
 
     public void Block()
     {
-        Debug.Log("Blocking");
+        animator.SetTrigger("block");
+    }
+
+    private void OnTriggerEnter(Collider col)
+    {
+        if (col.tag == "Enemy")
+        {
+            //Le has pegado al men
+        }
     }
 }

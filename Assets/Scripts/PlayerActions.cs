@@ -54,6 +54,10 @@ public class PlayerActions : MonoBehaviour
         {
             weapon.Attack();
         }
+        else if (Input.GetKeyDown("z"))
+        {
+            weapon.HorizontalAttack();
+        }
         else if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             weapon.Block();
