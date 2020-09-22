@@ -19,6 +19,23 @@ public class PlayerActions : MonoBehaviour
     private void Update()
     {
         Combat();
+
+        if(Input.GetKeyDown(KeyCode.C)){
+            if(focus){
+                focus = false;
+            }
+            else{
+                focus = true;
+            }
+        }
+
+        if(focus){
+            Vector3 desiredPosition = enemy.position;
+            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+            transform.position = smoothedPosition;
+
+            transform.LookAt(enemy);
+        }
     }
 
     void FixedUpdate()
@@ -60,25 +77,6 @@ public class PlayerActions : MonoBehaviour
         yaw += rotationY * Input.GetAxis("Mouse X");
 
         transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
-    }
-
-    void Update(){
-        if(Input.GetKeyDown(KeyCode.C)){
-            if(focus){
-                focus = false;
-            }
-            else{
-                focus = true;
-            }
-        }
-
-        if(focus){
-            Vector3 desiredPosition = enemy.position;
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-            transform.position = smoothedPosition;
-
-            transform.LookAt(enemy);
-        }
     }
 
     void Combat()
