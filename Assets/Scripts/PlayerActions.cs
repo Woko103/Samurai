@@ -3,6 +3,16 @@
 public class PlayerActions : MonoBehaviour
 {
     public float movementSpeed;
+    public float rotationY;
+    public float smoothSpeed;
+
+    private bool focus = false;
+    public Transform enemy;
+
+    private Time focusTime;
+
+
+    private float yaw = 0.0f;
 
     void FixedUpdate()
     {
@@ -30,6 +40,29 @@ public class PlayerActions : MonoBehaviour
         else if (Input.GetKey("d"))
         {
             transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed;
+        }
+
+        yaw += rotationY * Input.GetAxis("Mouse X");
+
+        transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
+    }
+
+    void Update(){
+        if(Input.GetKeyDown(KeyCode.C)){
+            if(focus){
+                focus = false;
+            }
+            else{
+                focus = true;
+            }
+        }
+
+        if(focus){
+            Vector3 desiredPosition = enemy.position;
+            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+            transform.position = smoothedPosition;
+
+            transform.LookAt(enemy);
         }
     }
 }
