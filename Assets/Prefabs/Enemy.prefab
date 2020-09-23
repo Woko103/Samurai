@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5b842f5624c2db4449e8af9331c79658, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,7 +110,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   speed: 3
+  life: 100
   weapon: {fileID: 8307776357268795405}
+  playerWeapon: {fileID: 0}
 --- !u!54 &7244094714973509789
 Rigidbody:
   m_ObjectHideFlags: 0
