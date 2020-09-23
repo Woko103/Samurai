@@ -29,7 +29,7 @@ public class Sword : MonoBehaviour
     {
         if (col.tag == "Enemy")
         {
-            //Le has pegado al men
+            //Le has pegado al enemigo
         }
     }
 }
