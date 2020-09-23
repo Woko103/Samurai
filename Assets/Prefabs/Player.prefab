@@ -226,6 +226,7 @@ MonoBehaviour:
   movementSpeed: 5
   rotationY: 4
   smoothSpeed: 0
+  life: 100
   enemy: {fileID: 0}
   weapon: {fileID: 2909387483617842644}
 --- !u!54 &7545378126971367419

@@ -5,6 +5,7 @@ public class PlayerActions : MonoBehaviour
     public float movementSpeed;
     public float rotationY;
     public float smoothSpeed;
+    public float life;
 
     private bool focus = false;
     public Transform enemy;

@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour{
     public Transform player;
 
     public float speed;
+    public float life;
     private float attackTime = 0.0f;
 
     public Sword weapon;
@@ -63,7 +64,6 @@ public class EnemyAI : MonoBehaviour{
         }
         else if(attackTime < 1.5f && noAnimations() && (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
-            Debug.Log("entra");
             weapon.Block();
         }
     }
