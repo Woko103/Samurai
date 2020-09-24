@@ -27,6 +27,11 @@ public class Sword : MonoBehaviour
         animator.SetTrigger("block");
     }
 
+    public void Disblock()
+    {
+        animator.SetTrigger("disblock");
+    }
+
     public void Reset()
     {
         animator.SetTrigger("reset");

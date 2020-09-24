@@ -114,6 +114,10 @@ public class PlayerActions : MonoBehaviour
         {
             weapon.Block();
         }
+        if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            weapon.Disblock();
+        }
         else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 2)
         {
             if (comboNum == 0)
