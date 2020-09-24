@@ -3,22 +3,30 @@
 public class PlayerActions : MonoBehaviour
 {
     public float movementSpeed;
+    public float dashSpeed;
     public float rotationY;
     public float smoothSpeed;
     public float life;
+    private float yaw = 0.0f;
+    private float dashTime = 1;
+    private float dashCooldown = 3;
+
+    private char direction = '-';
+    private char lastKey = '-';
 
     private bool focus = false;
+    private bool dashing = false;
+
     public Transform enemy;
-
     private Time focusTime;
-
-
-    private float yaw = 0.0f;
 
     public Sword weapon;
 
     private void Update()
     {
+        dashTime += Time.deltaTime;
+        dashCooldown += Time.deltaTime;
+
         Combat();
 
         if(Input.GetKeyDown(KeyCode.C)){
@@ -47,32 +55,59 @@ public class PlayerActions : MonoBehaviour
     void Movement()
     {
         float run = 1f;
+        float dSpeed = 1;
 
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
+        if(!dashing && lastKey != '-'){
+            lastKey = '-';
+        }
+
+        if (Input.GetKey(KeyCode.LeftControl)){
             run = 0.5f;
         }
 
-        if (Input.GetKey("w"))
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
+        if (Input.GetKey(KeyCode.LeftShift)){
                 run = 2f;
-            }
-            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run;
-        }
-        else if (Input.GetKey("s"))
-        {
-            transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * movementSpeed;
         }
 
-        if (Input.GetKey("a"))
-        {
-            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed;
+        if(dashing){
+            dSpeed = dashSpeed;
         }
-        else if (Input.GetKey("d"))
-        {
-            transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed;
+        
+        if ((Input.GetKey("w") && !dashing) || (dashing && direction == 'w')){
+            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run * dSpeed;
+            if(!dashing){
+                lastKey = 'w';
+            }
+        }
+        else if ((Input.GetKey("s") && !dashing) || (dashing && (direction == 's' || direction == '-'))){
+            transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * movementSpeed * run * dSpeed;
+            if(!dashing){
+                lastKey = 's';
+            }
+        }
+
+        if ((Input.GetKey("a") && !dashing) || (dashing && direction == 'a')){
+            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed * run * dSpeed;
+            if(!dashing){
+                lastKey = 'a';
+            }
+        }
+        else if ((Input.GetKey("d") && !dashing) || (dashing && direction == 'd')){
+            transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed * run * dSpeed;
+            if(!dashing){
+                lastKey = 'd';
+            }
+        }
+
+        if(!dashing && dashCooldown >= 3 && Input.GetKey(KeyCode.LeftAlt)){
+            dashTime = 0;
+            dashing = true;
+            direction = lastKey;
+        }
+
+        if(dashing && dashTime >= 0.25f){
+            dashing = false;
+            dashCooldown = 0;
         }
 
         yaw += rotationY * Input.GetAxis("Mouse X");

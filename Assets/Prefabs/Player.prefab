@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 5
+  dashSpeed: 6
   rotationY: 4
   smoothSpeed: 0
   life: 100
