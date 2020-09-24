@@ -581,6 +581,11 @@ PrefabInstance:
       propertyPath: rotationY
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7545378126971367418, guid: 78f7ca21da3ccd44cba8d4dbf451881d,
+        type: 3}
+      propertyPath: resetTime
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7842153485327442313, guid: 78f7ca21da3ccd44cba8d4dbf451881d,
         type: 3}
       propertyPath: m_Enabled

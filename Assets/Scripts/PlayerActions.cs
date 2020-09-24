@@ -2,25 +2,34 @@
 
 public class PlayerActions : MonoBehaviour
 {
+    [Header("Rotation and movement")]
     public float movementSpeed;
-    public float dashSpeed;
     public float rotationY;
     public float smoothSpeed;
-    public float life;
     private float yaw = 0.0f;
+    
+    [Header("Dash")]
+    public float dashSpeed;
     private float dashTime = 1;
     private float dashCooldown = 3;
-
     private char direction = '-';
     private char lastKey = '-';
-
-    private bool focus = false;
     private bool dashing = false;
+    
+    [Header("Combo")]
+    public int comboNum;
+    public float reset;
+    public float resetTime;
 
+    [Header("Auto-Focus")]
+    private bool focus = false;
     public Transform enemy;
     private Time focusTime;
 
+    [Header("Other")]
     public Sword weapon;
+    
+    public float life;
 
     private void Update()
     {
@@ -28,23 +37,7 @@ public class PlayerActions : MonoBehaviour
         dashCooldown += Time.deltaTime;
 
         Combat();
-
-        if(Input.GetKeyDown(KeyCode.C)){
-            if(focus){
-                focus = false;
-            }
-            else{
-                focus = true;
-            }
-        }
-
-        if(focus){
-            Vector3 desiredPosition = enemy.position;
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-            transform.position = smoothedPosition;
-
-            transform.LookAt(enemy);
-        }
+        AutoFocus();
     }
 
     void FixedUpdate()
@@ -117,17 +110,59 @@ public class PlayerActions : MonoBehaviour
 
     void Combat()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            weapon.Attack();
-        }
-        else if (Input.GetKeyDown("z"))
-        {
-            weapon.HorizontalAttack();
-        }
-        else if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             weapon.Block();
+        }
+        else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 2)
+        {
+            if (comboNum == 0)
+                weapon.Attack();
+            else if (comboNum == 1)
+                weapon.HorizontalAttack();
+
+            comboNum++;
+            reset = 0f;
+        }
+
+        if (comboNum > 0)
+        {
+            reset += Time.deltaTime;
+            if (reset > resetTime)
+            {
+                weapon.Reset();
+                comboNum = 0;
+            }
+        }
+
+        if (comboNum == 2)
+        {
+            resetTime = 3f;
+            comboNum = 0;
+        }
+        else
+        {
+            resetTime = 0.4f;
+        }
+    }
+
+    void AutoFocus()
+    {
+        if(Input.GetKeyDown(KeyCode.C)){
+            if(focus){
+                focus = false;
+            }
+            else{
+                focus = true;
+            }
+        }
+
+        if(focus){
+            Vector3 desiredPosition = enemy.position;
+            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+            transform.position = smoothedPosition;
+
+            transform.LookAt(enemy);
         }
     }
 }

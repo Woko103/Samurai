@@ -27,6 +27,11 @@ public class Sword : MonoBehaviour
         animator.SetTrigger("block");
     }
 
+    public void Reset()
+    {
+        animator.SetTrigger("reset");
+    }
+
     private void OnTriggerEnter(Collider col)
     {
         if (col.tag == "Enemy")
