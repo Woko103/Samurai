@@ -9,6 +9,8 @@ public class Sword : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
     public void Attack()
     {
