@@ -64,7 +64,6 @@ public class EnemyAI : MonoBehaviour{
             }
         }
         
-
         Combat();
 
         if(defenseTime >= 1){

@@ -17,9 +17,9 @@ public class PlayerActions : MonoBehaviour
     private bool dashing = false;
     
     [Header("Combo")]
-    public int comboNum;
-    public float reset;
-    public float resetTime;
+    private int comboNum;
+    private float reset;
+    private float resetTime;
 
     [Header("Auto-Focus")]
     private bool focus = false;
