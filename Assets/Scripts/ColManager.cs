@@ -15,17 +15,17 @@ void Update(){
 void OnTriggerEnter(Collider col){
         if(col.gameObject.tag == "Enemy" && hitTimePlayer >= 2){
             EnemyAI  enemy = col.gameObject.GetComponent<EnemyAI >();
-            Debug.Log(enemy.life);
+            //Debug.Log("Enemy life: " + enemy.life);
             enemy.life -= 25;
-            Debug.Log(enemy.life);
+            //Debug.Log("Enemy life: " + enemy.life);
             hitTimePlayer = 0.0f;
         }
 
         if(col.gameObject.tag == "Player" && hitTimeEnemy >= 2){
             PlayerActions  player = col.gameObject.GetComponent<PlayerActions >();
-            Debug.Log("Player life: " + player.life);
+            //Debug.Log("Player life: " + player.life);
             player.life -= 25;
-            Debug.Log("Player life: " + player.life);
+            //Debug.Log("Player life: " + player.life);
             hitTimeEnemy = 0.0f;
         }
 

@@ -7,8 +7,14 @@ public class EnemyAI : MonoBehaviour{
     public Transform player;
 
     public float speed;
+    public float dashSpeed;
     public float life;
     private float attackTime = 0.0f;
+    private float defenseTime = 0.0f;
+    private float dashTime = 1;
+    private float dashCooldown = 3;
+
+    private bool dashing = false;
 
     public Sword weapon;
     public Sword playerWeapon;
@@ -23,29 +29,45 @@ public class EnemyAI : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-        Vector3 direction = player.position - transform.position;
-        Quaternion rotation = Quaternion.LookRotation(direction);
-        transform.rotation = rotation;
+        if(!dashing){
+            Vector3 direction = player.position - transform.position;
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            transform.rotation = rotation;
+        }
 
         attackTime += Time.deltaTime;
+        defenseTime += Time.deltaTime;
 
-        if(!close && (inRange(2))){
-            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+        dashTime += Time.deltaTime;
+        dashCooldown += Time.deltaTime;
+
+        if(dashing){
+            dash();
         }
         else{
-            if(!close){
-                close = true;
+            if(!close && (inRange(2))){
+                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
             }
-        }
+            else{
+                if(!close){
+                    close = true;
+                }
+            }
 
-        if(close){
-            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
-            if(close && (inRange(3))){
-                close = false;
+            if(close){
+                transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
+                if(close && (inRange(3))){
+                    close = false;
+                }
             }
         }
+        
 
         Combat();
+
+        if(defenseTime >= 1){
+            defenseTime = 0.0f;
+        }
     }
 
     void Combat(){
@@ -62,9 +84,38 @@ public class EnemyAI : MonoBehaviour{
                 break;
             }
         }
-        else if(attackTime < 1.5f && noAnimations() && (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        else if(attackTime < 1.5f && noAnimations() && !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block") && 
+        (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
-            weapon.Block();
+            if(!dashing && (dashCooldown < 3 || defenseTime <= 0.4f)){
+                Debug.Log("Block");
+                weapon.Block();
+            }
+            else if(!dashing){
+                Debug.Log("Dash");
+                dashing = true;
+                dashTime = 0.0f;
+            }
+        }
+    }
+
+    public void dash(){
+        if(dashing){
+            if(dashTime < 0.25f){
+                if(transform.position.x > player.position.x){
+                    transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * speed * dashSpeed;
+                }
+                else if(transform.position.x < player.position.x){
+                    transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * speed * dashSpeed;
+                }
+                else{
+                    transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed * dashSpeed;
+                }
+            }
+            else{
+                dashCooldown = 0.0f;
+                dashing = false;
+            }
         }
     }
 

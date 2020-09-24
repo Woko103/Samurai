@@ -31,12 +31,4 @@ public class Sword : MonoBehaviour
     {
         animator.SetTrigger("reset");
     }
-
-    private void OnTriggerEnter(Collider col)
-    {
-        if (col.tag == "Enemy")
-        {
-            //Le has pegado al enemigo
-        }
-    }
 }
