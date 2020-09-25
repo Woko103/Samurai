@@ -19,8 +19,10 @@ public class EnemyAI : MonoBehaviour{
     [Header("Dash")]
     public float dashSpeed;
     private float dashTime = 1;
-    private float dashCooldown = 3;
+    private float dashCooldown = 2.5f;
     private bool dashing = false;
+    private bool aggressive = false;
+    private float aggressiveCooldown = 10;
 
     [Header("Combo")]
     private int comboNum;
@@ -71,7 +73,14 @@ public class EnemyAI : MonoBehaviour{
 
             if(close){
                 if(waitForAttack <= 3){
-                    transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
+                    if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
+                        dashing = true;
+                        aggressive = true;
+                        dashTime = 0.0f;
+                    }
+                    else{
+                        transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
+                    }
                 }
                 else{
                     if(inRange(1)){
@@ -111,7 +120,7 @@ public class EnemyAI : MonoBehaviour{
             attackTime = 0.0f;
             attacking = true;
         }
-        else if(!inRange(1.5f) && noAnimations() && !dashing && !blocking && !attacking && 
+        else if(!inRange(1f) && noAnimations() && !dashing && !blocking && !attacking && 
         (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
             if((dashCooldown < 2.5f || defenseTime <= 0.3f)){
@@ -133,7 +142,11 @@ public class EnemyAI : MonoBehaviour{
             attackTime = 0.0f;
         }
 
-        if(!noBlockingAnim() && blockTime > 2 && blocking){
+        if(playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            blockTime = 0.0f;
+        }
+        else if(!noBlockingAnim() && blockTime > 1 && blocking){
             //Debug.Log("disblock");
             weapon.Disblock();
             blocking = false;
@@ -148,19 +161,28 @@ public class EnemyAI : MonoBehaviour{
     public void dash(){
         if(dashing){
             if(dashTime < 0.15f){
-                if(transform.position.x > player.position.x){
-                    transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * speed * dashSpeed;
-                }
-                else if(transform.position.x < player.position.x){
-                    transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * speed * dashSpeed;
+                if(aggressive){
+                    transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * dashSpeed;
                 }
                 else{
-                    transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed * dashSpeed;
+                    if(transform.position.x > player.position.x){
+                        transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * speed * dashSpeed;
+                    }
+                    else if(transform.position.x < player.position.x){
+                        transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * speed * dashSpeed;
+                    }
+                    else{
+                        transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed * dashSpeed;
+                    }
                 }
             }
             else{
                 dashCooldown = 0.0f;
                 dashing = false;
+                if(aggressive){
+                    aggressive = false;
+                    aggressiveCooldown = 0.0f;
+                }
             }
         }
     }
@@ -235,6 +257,7 @@ public class EnemyAI : MonoBehaviour{
 
         dashTime += Time.deltaTime;
         dashCooldown += Time.deltaTime;
+        aggressiveCooldown += Time.deltaTime;
 
         resetCombo += Time.deltaTime;
     }
