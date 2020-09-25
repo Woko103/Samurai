@@ -39,8 +39,8 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         centerCursor.SetActive(false);
         Time.timeScale = 0f;
-        gameIsPaused = true;
         Cursor.lockState = CursorLockMode.None;
+        gameIsPaused = true;
     }
 
     public void LoadMenu()
