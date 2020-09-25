@@ -4,6 +4,7 @@ public class PlayerActions : MonoBehaviour
 {
     [Header("Rotation and movement")]
     public float movementSpeed;
+    public float runSpeed;
     public float rotationY;
     public float smoothSpeed;
     private float yaw = 0.0f;
@@ -26,10 +27,18 @@ public class PlayerActions : MonoBehaviour
     public Transform enemy;
     private Time focusTime;
 
+    [Header("Life")]
+    public HealthBar healthBar;
+    public float maxHealth;
+    public float currentHealth;
+
     [Header("Other")]
     public Sword weapon;
-    
-    public float life;
+
+    void Start(){
+        currentHealth = maxHealth;
+        healthBar.setMaxHealth(maxHealth);
+    }
 
     private void Update()
     {
@@ -59,7 +68,7 @@ public class PlayerActions : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.LeftShift)){
-                run = 2f;
+                run = runSpeed;
         }
 
         if(dashing){

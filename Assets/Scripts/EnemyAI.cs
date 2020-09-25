@@ -6,11 +6,13 @@ public class EnemyAI : MonoBehaviour{
 
     public Transform player;
 
-    [Header("Speed & Life")]
+    [Header("Speed & Actions")]
     public float speed;
-    public float life;
+    public float runSpeed;
     private float attackTime = 0.0f;
     private float defenseTime = 0.0f;
+    private float waitForAttack = 0.0f;
+    private float blockTime = 0.0f;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -22,6 +24,11 @@ public class EnemyAI : MonoBehaviour{
     private int comboNum;
     private float resetCombo = 0.0f;
 
+    [Header("Life")]
+    public HealthBar healthBar;
+    public float maxHealth;
+    public float currentHealth;
+
     [Header("Swords & RigidBody")]
     public Sword weapon;
     public Sword playerWeapon;
@@ -31,6 +38,9 @@ public class EnemyAI : MonoBehaviour{
     // Start is called before the first frame update
     void Start(){
         rb = this.GetComponent<Rigidbody>();
+
+        currentHealth = maxHealth;
+        healthBar.setMaxHealth(maxHealth);
     }
 
     // Update is called once per frame
@@ -48,7 +58,8 @@ public class EnemyAI : MonoBehaviour{
         }
         else{
             if(!close && (inRange(2))){
-                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
+                waitForAttack = 0.0f;
             }
             else{
                 if(!close){
@@ -57,10 +68,18 @@ public class EnemyAI : MonoBehaviour{
             }
 
             if(close){
-                transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
-                if(close && (inRange(3))){
-                    close = false;
+                if(waitForAttack <= 3){
+                    transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
                 }
+                else{
+                    if(inRange(1)){
+                        transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+                    }
+                }
+            }
+
+            if(close && (inRange(3))){
+                close = false;
             }
         }
         
@@ -72,37 +91,41 @@ public class EnemyAI : MonoBehaviour{
     }
 
     void Combat(){
-        if(!inRange(1) && (attackTime >= 1.5f || comboNum > 0) && noAnimations() && !dashing){
+        if(!inRange(1) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing){
             if(comboNum == 0){
-                Debug.Log("here");
                 weapon.Attack();
                 comboNum++;
                 resetCombo = 0.0f;
             }
             else{
-                Debug.Log("entra");
                 weapon.HorizontalAttack();
-                comboNum = 0;
-                attackTime = 0.0f;
+                comboNum--;
             }
+            attackTime = 0.0f;
         }
-        else if(attackTime < 1.5f && noAnimations() && 
+        else if(noAnimations() && !dashing && comboNum == 0 &&
         (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
-            if(!dashing && (dashCooldown < 3 || defenseTime <= 0.4f)){
+            if((dashCooldown < 3 || defenseTime <= 0.4f)){
                 Debug.Log("Block");
                 weapon.Block();
-                weapon.Disblock();
+                blockTime = 0.0f;
             }
-            else if(!dashing){
+            else if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
+            !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("disblock") && 
+            !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                 Debug.Log("Dash");
                 dashing = true;
                 dashTime = 0.0f;
             }
         }
 
+        if(weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && blockTime > 2){
+            Debug.Log("disblock");
+            weapon.Disblock();
+        }
+
         if(comboNum > 0 && resetCombo >= 0.75f){
-            Debug.Log("reset");
             comboNum = 0;
             attackTime = 0.0f;
         }
@@ -149,16 +172,16 @@ public class EnemyAI : MonoBehaviour{
         !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block") && 
         !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") &&
         !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("disblock")){
-            Debug.Log("No hay");
             return true;
         }
-        Debug.Log("Hay animaciones");
         return false;
     }
 
     public void actulizeTimers(){
         attackTime += Time.deltaTime;
         defenseTime += Time.deltaTime;
+        waitForAttack += Time.deltaTime;
+        blockTime += Time.deltaTime;
 
         dashTime += Time.deltaTime;
         dashCooldown += Time.deltaTime;

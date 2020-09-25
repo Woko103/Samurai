@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ColManager : MonoBehaviour{
 
@@ -13,21 +14,44 @@ void Update(){
 }
 
 void OnTriggerEnter(Collider col){
-        if(col.gameObject.tag == "Enemy" && hitTimePlayer >= 2){
+        if(col.gameObject.tag == "Enemy" && hitTimeEnemy >= 2){
             EnemyAI  enemy = col.gameObject.GetComponent<EnemyAI >();
-            //Debug.Log("Enemy life: " + enemy.life);
-            enemy.life -= 25;
-            //Debug.Log("Enemy life: " + enemy.life);
-            hitTimePlayer = 0.0f;
+            PlayerActions player = transform.parent.gameObject.GetComponent<PlayerActions>();
+
+            if(player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+                if(!enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking")){
+                    //Debug.Log("Enemy life: " + enemy.life);
+                    enemy.currentHealth -= 25;
+                    enemy.healthBar.setHealth(enemy.currentHealth);
+                    //Debug.Log("Enemy life: " + enemy.life);
+                    hitTimeEnemy = 0.0f;
+                    
+                    if(enemy.currentHealth == 0){
+                        SceneManager.LoadScene("Menu");
+                    }
+                }
+            }
         }
 
-        if(col.gameObject.tag == "Player" && hitTimeEnemy >= 2){
+        if(col.gameObject.tag == "Player" && hitTimePlayer >= 2){
             PlayerActions  player = col.gameObject.GetComponent<PlayerActions >();
-            //Debug.Log("Player life: " + player.life);
-            player.life -= 25;
-            //Debug.Log("Player life: " + player.life);
-            hitTimeEnemy = 0.0f;
-        }
+            EnemyAI enemy = transform.parent.gameObject.GetComponent<EnemyAI>();
 
+            if(enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+                //Debug.Log("Player life: " + player.life);
+                if(!player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking")){
+                    player.currentHealth -= 25;
+                    player.healthBar.setHealth(player.currentHealth);
+                    //Debug.Log("Player life: " + player.life);
+                    hitTimePlayer = 0.0f;
+                }
+
+                if(player.currentHealth == 0){
+                    SceneManager.LoadScene("Menu");
+                }
+            }
+        }
     }
 }
