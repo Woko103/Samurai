@@ -20,7 +20,8 @@ void OnTriggerEnter(Collider col){
 
             if(player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
-                if(!enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking")){
+                if(!enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
+                !enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     //Debug.Log("Enemy life: " + enemy.life);
                     enemy.currentHealth -= 25;
                     enemy.healthBar.setHealth(enemy.currentHealth);
@@ -28,6 +29,7 @@ void OnTriggerEnter(Collider col){
                     hitTimeEnemy = 0.0f;
                     
                     if(enemy.currentHealth == 0){
+                        Cursor.lockState = CursorLockMode.None;
                         SceneManager.LoadScene("Menu");
                     }
                 }
@@ -41,7 +43,8 @@ void OnTriggerEnter(Collider col){
             if(enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
                 //Debug.Log("Player life: " + player.life);
-                if(!player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking")){
+                if(!player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
+                !player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     player.currentHealth -= 25;
                     player.healthBar.setHealth(player.currentHealth);
                     //Debug.Log("Player life: " + player.life);
@@ -49,6 +52,7 @@ void OnTriggerEnter(Collider col){
                 }
 
                 if(player.currentHealth == 0){
+                    Cursor.lockState = CursorLockMode.None;
                     SceneManager.LoadScene("Menu");
                 }
             }

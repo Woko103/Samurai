@@ -13,6 +13,8 @@ public class EnemyAI : MonoBehaviour{
     private float defenseTime = 0.0f;
     private float waitForAttack = 0.0f;
     private float blockTime = 0.0f;
+    private bool attacking = false;
+    private bool blocking = false;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -75,6 +77,11 @@ public class EnemyAI : MonoBehaviour{
                     if(inRange(1)){
                         transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
                     }
+                    else{
+                        if(!inRange(0.9f)){
+                            transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
+                        }
+                    }
                 }
             }
 
@@ -91,7 +98,7 @@ public class EnemyAI : MonoBehaviour{
     }
 
     void Combat(){
-        if(!inRange(1) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing){
+        if(!inRange(1) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing && !blocking && !attacking){
             if(comboNum == 0){
                 weapon.Attack();
                 comboNum++;
@@ -102,27 +109,34 @@ public class EnemyAI : MonoBehaviour{
                 comboNum--;
             }
             attackTime = 0.0f;
+            attacking = true;
         }
-        else if(noAnimations() && !dashing && comboNum == 0 &&
+        else if(!inRange(1.5f) && noAnimations() && !dashing && !blocking && !attacking && 
         (playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerWeapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
-            if((dashCooldown < 3 || defenseTime <= 0.4f)){
-                Debug.Log("Block");
-                weapon.Block();
+            if((dashCooldown < 2.5f || defenseTime <= 0.3f)){
                 blockTime = 0.0f;
+                blocking = true;
+                //Debug.Log("Block");
+                weapon.Block();
             }
-            else if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
-            !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("disblock") && 
-            !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
-                Debug.Log("Dash");
+            else if(noBlockingAnim() && noDisblockAnim() && noBlockAnim()){
+                //Debug.Log("Dash");
                 dashing = true;
                 dashTime = 0.0f;
             }
         }
 
-        if(weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && blockTime > 2){
-            Debug.Log("disblock");
+        if(noEspadazoAnim() && noEspadazoHorizAnim() && attacking){
+            //Debug.Log("deja de atacar");
+            attacking = false;
+            attackTime = 0.0f;
+        }
+
+        if(!noBlockingAnim() && blockTime > 2 && blocking){
+            //Debug.Log("disblock");
             weapon.Disblock();
+            blocking = false;
         }
 
         if(comboNum > 0 && resetCombo >= 0.75f){
@@ -133,7 +147,7 @@ public class EnemyAI : MonoBehaviour{
 
     public void dash(){
         if(dashing){
-            if(dashTime < 0.25f){
+            if(dashTime < 0.15f){
                 if(transform.position.x > player.position.x){
                     transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * speed * dashSpeed;
                 }
@@ -167,13 +181,49 @@ public class EnemyAI : MonoBehaviour{
     }
 
     public bool noAnimations(){
-        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") && 
-        !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal") && 
-        !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block") && 
-        !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") &&
-        !weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("disblock")){
+        if(noEspadazoAnim() && noEspadazoHorizAnim() && noBlockAnim() && noBlockingAnim() && noDisblockAnim()){
             return true;
         }
+        return false;
+    }
+
+    public bool noEspadazoAnim(){
+        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool noEspadazoHorizAnim(){
+        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool noBlockAnim(){
+        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool noBlockingAnim(){
+        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking")){
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool noDisblockAnim(){
+        if(!weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("dislock")){
+            return true;
+        }
+
         return false;
     }
 

@@ -68,7 +68,7 @@ public class PlayerActions : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.LeftShift)){
-                run = runSpeed;
+            run = runSpeed;
         }
 
         if(dashing){
@@ -101,13 +101,13 @@ public class PlayerActions : MonoBehaviour
             }
         }
 
-        if(!dashing && dashCooldown >= 3 && Input.GetKey(KeyCode.LeftAlt)){
+        if(!dashing && dashCooldown >= 2.5f && Input.GetKey(KeyCode.LeftAlt)){
             dashTime = 0;
             dashing = true;
             direction = lastKey;
         }
 
-        if(dashing && dashTime >= 0.25f){
+        if(dashing && dashTime >= 0.15f){
             dashing = false;
             dashCooldown = 0;
         }
