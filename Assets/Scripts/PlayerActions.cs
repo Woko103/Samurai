@@ -33,11 +33,12 @@ public class PlayerActions : MonoBehaviour
     public float currentHealth;
 
     [Header("Other")]
-    public Sword weapon;
+    public Animator animator;
 
     void Start(){
         currentHealth = maxHealth;
         healthBar.setMaxHealth(maxHealth);
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -121,18 +122,18 @@ public class PlayerActions : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            weapon.Block();
+            Block();
         }
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
-            weapon.Disblock();
+            Disblock();
         }
         else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 2)
         {
             if (comboNum == 0)
-                weapon.Attack();
+                Attack();
             else if (comboNum == 1)
-                weapon.HorizontalAttack();
+                HorizontalAttack();
 
             comboNum++;
             reset = 0f;
@@ -143,7 +144,7 @@ public class PlayerActions : MonoBehaviour
             reset += Time.deltaTime;
             if (reset > resetTime)
             {
-                weapon.Reset();
+                Reset();
                 comboNum = 0;
             }
         }
@@ -177,5 +178,30 @@ public class PlayerActions : MonoBehaviour
 
             transform.LookAt(enemy);
         }
+    }
+
+    public void Attack()
+    {
+        animator.SetTrigger("espadazo");
+    }
+
+    public void HorizontalAttack()
+    {
+        animator.SetTrigger("espadazo_hor");
+    }
+
+    public void Block()
+    {
+        animator.SetTrigger("block");
+    }
+
+    public void Disblock()
+    {
+        animator.SetTrigger("disblock");
+    }
+
+    public void Reset()
+    {
+        animator.SetTrigger("reset");
     }
 }
