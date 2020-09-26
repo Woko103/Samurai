@@ -8,6 +8,9 @@ public class ColManager : MonoBehaviour{
 private float hitTimePlayer = 0.0f;
 private float hitTimeEnemy = 0.0f;
 
+public Canvas gameOverCanvas;
+public Canvas victoryCanvas;
+
 void Update(){
     hitTimePlayer += Time.deltaTime;
     hitTimeEnemy += Time.deltaTime;
@@ -30,7 +33,8 @@ void OnTriggerEnter(Collider col){
                     
                     if(enemy.currentHealth == 0){
                         Cursor.lockState = CursorLockMode.None;
-                        SceneManager.LoadScene("Menu");
+                        victoryCanvas.gameObject.SetActive(true);
+                        Time.timeScale = 0;
                     }
                 }
             }
@@ -53,7 +57,8 @@ void OnTriggerEnter(Collider col){
 
                 if(player.currentHealth == 0){
                     Cursor.lockState = CursorLockMode.None;
-                    SceneManager.LoadScene("Menu");
+                    gameOverCanvas.gameObject.SetActive(true);
+                    Time.timeScale = 0;
                 }
             }
         }
