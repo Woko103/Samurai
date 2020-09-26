@@ -79,12 +79,14 @@ public class PlayerActions : MonoBehaviour
         if ((Input.GetKey("w") && !dashing) || (dashing && direction == 'w')){
             transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run * dSpeed;
             if(!dashing){
+                animator.SetTrigger("walk");
                 lastKey = 'w';
             }
         }
         else if ((Input.GetKey("s") && !dashing) || (dashing && (direction == 's' || direction == '-'))){
             transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * movementSpeed * run * dSpeed;
             if(!dashing){
+                animator.SetTrigger("walk");
                 lastKey = 's';
             }
         }
@@ -92,12 +94,14 @@ public class PlayerActions : MonoBehaviour
         if ((Input.GetKey("a") && !dashing) || (dashing && direction == 'a')){
             transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed * run * dSpeed;
             if(!dashing){
+                animator.SetTrigger("walk");
                 lastKey = 'a';
             }
         }
         else if ((Input.GetKey("d") && !dashing) || (dashing && direction == 'd')){
             transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed * run * dSpeed;
             if(!dashing){
+                animator.SetTrigger("walk");
                 lastKey = 'd';
             }
         }
@@ -122,18 +126,20 @@ public class PlayerActions : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            Block();
+            animator.SetTrigger("block");
         }
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
-            Disblock();
+            animator.SetTrigger("disblock");
         }
-        else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 2)
+        else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 3)
         {
             if (comboNum == 0)
-                Attack();
+                animator.SetTrigger("espadazo");
             else if (comboNum == 1)
-                HorizontalAttack();
+                animator.SetTrigger("espadazo_hor");
+            else if (comboNum == 2)
+                animator.SetTrigger("last_combo");
 
             comboNum++;
             reset = 0f;
@@ -144,12 +150,12 @@ public class PlayerActions : MonoBehaviour
             reset += Time.deltaTime;
             if (reset > resetTime)
             {
-                Reset();
+                animator.SetTrigger("reset");
                 comboNum = 0;
             }
         }
 
-        if (comboNum == 2)
+        if (comboNum == 3)
         {
             resetTime = 3f;
             comboNum = 0;
@@ -178,30 +184,5 @@ public class PlayerActions : MonoBehaviour
 
             transform.LookAt(enemy);
         }
-    }
-
-    public void Attack()
-    {
-        animator.SetTrigger("espadazo");
-    }
-
-    public void HorizontalAttack()
-    {
-        animator.SetTrigger("espadazo_hor");
-    }
-
-    public void Block()
-    {
-        animator.SetTrigger("block");
-    }
-
-    public void Disblock()
-    {
-        animator.SetTrigger("disblock");
-    }
-
-    public void Reset()
-    {
-        animator.SetTrigger("reset");
     }
 }

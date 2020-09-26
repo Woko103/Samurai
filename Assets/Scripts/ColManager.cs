@@ -11,6 +11,9 @@ private float hitTimeEnemy = 0.0f;
 public Canvas gameOverCanvas;
 public Canvas victoryCanvas;
 
+public PlayerActions player;
+public Animator enemyAnimator;
+
 void Update(){
     hitTimePlayer += Time.deltaTime;
     hitTimeEnemy += Time.deltaTime;
@@ -19,12 +22,11 @@ void Update(){
 void OnTriggerEnter(Collider col){
         if(col.gameObject.tag == "Enemy" && hitTimeEnemy >= 2){
             EnemyAI  enemy = col.gameObject.GetComponent<EnemyAI >();
-            PlayerActions player = transform.parent.gameObject.GetComponent<PlayerActions>();
 
             if(player.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         player.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
-                if(!enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
-                !enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
+                if(!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
+                !enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     //Debug.Log("Enemy life: " + enemy.life);
                     enemy.currentHealth -= 25;
                     enemy.healthBar.setHealth(enemy.currentHealth);
@@ -32,9 +34,8 @@ void OnTriggerEnter(Collider col){
                     hitTimeEnemy = 0.0f;
                     
                     if(enemy.currentHealth == 0){
-                        Cursor.lockState = CursorLockMode.None;
-                        victoryCanvas.gameObject.SetActive(true);
-                        Time.timeScale = 0;
+                        enemyAnimator.SetTrigger("death");
+                        Invoke("victory", 2.5f);
                     }
                 }
             }
@@ -42,10 +43,9 @@ void OnTriggerEnter(Collider col){
 
         if(col.gameObject.tag == "Player" && hitTimePlayer >= 2){
             PlayerActions  player = col.gameObject.GetComponent<PlayerActions >();
-            EnemyAI enemy = transform.parent.gameObject.GetComponent<EnemyAI>();
 
-            if(enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
-        enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
                 //Debug.Log("Player life: " + player.life);
                 if(!player.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
                 !player.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
@@ -56,11 +56,22 @@ void OnTriggerEnter(Collider col){
                 }
 
                 if(player.currentHealth == 0){
-                    Cursor.lockState = CursorLockMode.None;
-                    gameOverCanvas.gameObject.SetActive(true);
-                    Time.timeScale = 0;
+                    player.animator.SetTrigger("death");
+                    Invoke("gameOver", 2.5f);
                 }
             }
         }
+    }
+
+    public void gameOver(){
+        gameOverCanvas.gameObject.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 0;
+    }
+
+    public void victory(){
+        victoryCanvas.gameObject.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 0;
     }
 }
