@@ -21,8 +21,8 @@ void OnTriggerEnter(Collider col){
             EnemyAI  enemy = col.gameObject.GetComponent<EnemyAI >();
             PlayerActions player = transform.parent.gameObject.GetComponent<PlayerActions>();
 
-            if(player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
-        player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            if(player.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
+        player.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
                 if(!enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
                 !enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     //Debug.Log("Enemy life: " + enemy.life);
@@ -47,8 +47,8 @@ void OnTriggerEnter(Collider col){
             if(enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         enemy.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
                 //Debug.Log("Player life: " + player.life);
-                if(!player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
-                !player.weapon.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
+                if(!player.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
+                !player.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     player.currentHealth -= 25;
                     player.healthBar.setHealth(player.currentHealth);
                     //Debug.Log("Player life: " + player.life);
