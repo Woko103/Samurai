@@ -13,6 +13,7 @@ public Canvas victoryCanvas;
 
 public PlayerActions player;
 public Animator enemyAnimator;
+public ParticleSystem particle;
 
 void Update(){
     hitTimePlayer += Time.deltaTime;
@@ -37,6 +38,9 @@ void OnTriggerEnter(Collider col){
                         enemyAnimator.SetTrigger("death");
                         Invoke("victory", 2.5f);
                     }
+                }
+                else{
+                    StartCoroutine(Part());
                 }
             }
         }
@@ -73,5 +77,11 @@ void OnTriggerEnter(Collider col){
         victoryCanvas.gameObject.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Time.timeScale = 0;
+    }
+
+    private IEnumerator Part(){
+        particle.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        particle.gameObject.SetActive(false);
     }
 }
