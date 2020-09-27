@@ -384,6 +384,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Idle (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1ba83e7687709a94c8ab29860ba80421,
+        type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ba83e7687709a94c8ab29860ba80421, type: 3}
 --- !u!1 &444505397
@@ -5725,12 +5730,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!95 &1704933425 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 287394723426048258, guid: c3d7d285bbb61974ab7d84e2fe5a84f1,
-    type: 3}
-  m_PrefabInstance: {fileID: 287394721909612851}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1714170671 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 148312879684952333, guid: c3d7d285bbb61974ab7d84e2fe5a84f1,
@@ -6175,7 +6174,7 @@ PrefabInstance:
         type: 3}
       propertyPath: enemyAnimator
       value: 
-      objectReference: {fileID: 1704933425}
+      objectReference: {fileID: 950327588}
     - target: {fileID: 7816477956202861468, guid: 1203f82fc79f8624fb4e95692b63a923,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -6196,6 +6195,11 @@ PrefabInstance:
       propertyPath: enemy
       value: 
       objectReference: {fileID: 1390316166}
+    - target: {fileID: 8395920063254191784, guid: 1203f82fc79f8624fb4e95692b63a923,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395920063599961068, guid: 1203f82fc79f8624fb4e95692b63a923,
         type: 3}
       propertyPath: m_Name
