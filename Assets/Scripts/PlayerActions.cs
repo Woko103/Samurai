@@ -106,7 +106,7 @@ public class PlayerActions : MonoBehaviour
 
             Animations();
 
-            if(!dashing && dashCooldown >= 2.5f && Input.GetKeyDown(KeyCode.LeftAlt)){
+            if(!dashing && dashCooldown >= 2.5f && Input.GetKeyDown(KeyCode.Space)){
                 dashTime = 0;
                 dashing = true;
                 animator.SetTrigger("dash");
@@ -116,7 +116,15 @@ public class PlayerActions : MonoBehaviour
             if(dashing && dashTime >= 0.15f){
                 dashing = false;
                 dashCooldown = 0;
-                animator.SetTrigger("stop_moving");
+                if(Input.GetKey(KeyCode.LeftShift)){
+                    animator.SetTrigger("run");
+                }
+                else if(Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d")){
+                    animator.SetTrigger("walk");
+                }
+                else {
+                    animator.SetTrigger("stop_moving");
+                }
             }
         }
 
