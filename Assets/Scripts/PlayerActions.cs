@@ -21,11 +21,14 @@ public class PlayerActions : MonoBehaviour
     private int comboNum;
     private float reset;
     private float resetTime;
+    private float lastPosition;
+    private bool espadazo_hor;
+    private bool last_combo;
 
     [Header("Auto-Focus")]
-    private bool focus = false;
-    public Transform enemy;
-    private Time focusTime;
+    //private bool focus = false;
+    //public Transform enemy;
+    //private Time focusTime;
 
     [Header("Life")]
     public HealthBar healthBar;
@@ -48,7 +51,7 @@ public class PlayerActions : MonoBehaviour
         dashCooldown += Time.deltaTime;
 
         Combat();
-        AutoFocus();
+        //AutoFocus();
     }
 
     void FixedUpdate()
@@ -198,25 +201,25 @@ public class PlayerActions : MonoBehaviour
         }
     }
 
-    void AutoFocus()
-    {
-        if(Input.GetKeyDown(KeyCode.C)){
-            if(focus){
-                focus = false;
-            }
-            else{
-                focus = true;
-            }
-        }
-
-        if(focus){
-            Vector3 desiredPosition = enemy.position;
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-            transform.position = smoothedPosition;
-
-            transform.LookAt(enemy);
-        }
-    }
+    //void AutoFocus()
+    //{
+    //    if(Input.GetKeyDown(KeyCode.C)){
+    //        if(focus){
+    //            focus = false;
+    //        }
+    //        else{
+    //            focus = true;
+    //        }
+    //    }
+//
+    //    if(focus){
+    //        Vector3 desiredPosition = enemy.position;
+    //        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+    //        transform.position = smoothedPosition;
+//
+    //        transform.LookAt(enemy);
+    //    }
+    //}
 
     void Animations(){
         if((Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")) && 
