@@ -21,9 +21,10 @@ public class PlayerActions : MonoBehaviour
     private int comboNum;
     private float reset;
     private float resetTime;
-    private float lastPosition;
-    private bool espadazo_hor;
-    private bool last_combo;
+    private bool espadazo = false;
+    private bool espadazo_hor = false;
+    private bool last_combo = false;
+    public AudioSource swordAudio;
 
     [Header("Auto-Focus")]
     //private bool focus = false;
@@ -38,8 +39,11 @@ public class PlayerActions : MonoBehaviour
 
     [Header("Other")]
     public Animator animator;
+    public GameObject intro;
+    private bool hasStart;
 
     void Start(){
+        Invoke("startDuel", 7.08f);
         currentHealth = maxHealth;
         healthBar.setMaxHealth(maxHealth);
         animator = GetComponent<Animator>();
@@ -47,16 +51,22 @@ public class PlayerActions : MonoBehaviour
 
     private void Update()
     {
-        dashTime += Time.deltaTime;
-        dashCooldown += Time.deltaTime;
+        if(hasStart)
+        {
+            dashTime += Time.deltaTime;
+            dashCooldown += Time.deltaTime;
 
-        Combat();
-        //AutoFocus();
+            Combat();
+            //AutoFocus();
+        }
     }
 
     void FixedUpdate()
     {
-        Movement();
+        if(hasStart)
+        {
+            Movement();
+        }
     }
 
     void Movement()
@@ -188,7 +198,31 @@ public class PlayerActions : MonoBehaviour
             resetTime = 0.4f;
         }
 
+        //Sonidos espada
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
+            if (!espadazo)
+            {   
+                swordAudio.Play();
+                espadazo = true;
+            }
+        }
+        else espadazo = false;
+
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            if (!espadazo_hor)
+            {   
+                swordAudio.Play();
+                espadazo_hor = true;
+            }
+        }
+        else espadazo_hor = false;
+
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
+            if (!last_combo)
+            {   
+                swordAudio.Play();
+                last_combo = true;
+            }
             if(Input.GetKey(KeyCode.LeftShift)){
                 animator.SetTrigger("run");
             }
@@ -199,6 +233,8 @@ public class PlayerActions : MonoBehaviour
                 animator.SetTrigger("reset");
             }
         }
+        else last_combo = false;
+
     }
 
     //void AutoFocus()
@@ -245,5 +281,11 @@ public class PlayerActions : MonoBehaviour
         if(Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")){
             animator.SetTrigger("stop_moving");
         }
+    }
+
+    void startDuel()
+    {
+        intro.SetActive(false);
+        hasStart = true;
     }
 }

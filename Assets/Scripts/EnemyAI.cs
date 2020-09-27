@@ -39,9 +39,17 @@ public class EnemyAI : MonoBehaviour{
     public Animator playerAnimator;
     private Rigidbody rb;
 
+    [Header("Audio")]
+    public AudioSource swordAudio;
+    private bool espadazo = false;
+    private bool espadazo_hor = false;
+    private bool last_combo = false;
+
     private bool close = false;
+    private bool hasStart = false;
     // Start is called before the first frame update
     void Start(){
+        Invoke("startDuel", 7.08f);
         rb = this.GetComponent<Rigidbody>();
 
         currentHealth = maxHealth;
@@ -50,72 +58,73 @@ public class EnemyAI : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-        if(!dashing){
-            Vector3 direction = player.position - transform.position;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            transform.rotation = rotation;
-        }
-
-        actulizeTimers();
-
-        if(!isDead){
-            if(dashing){
-                dash();
+        if(hasStart)
+        {
+            if(!dashing){
+                Vector3 direction = player.position - transform.position;
+                Quaternion rotation = Quaternion.LookRotation(direction);
+                transform.rotation = rotation;
             }
-            else{
-                if(!close && (inRange(2))){
-                    transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
-                    enemyAnimator.SetTrigger("run");
-                    waitForAttack = 0.0f;
+
+            actulizeTimers();
+
+            if(!isDead){
+                if(dashing){
+                    dash();
                 }
                 else{
-                    if(!close){
-                        close = true;
-                    }
-                }
-
-                if(close){
-                    if(!noRunAnim()){
-                        enemyAnimator.SetTrigger("stop_running");
-                    }
-                    if(waitForAttack <= 3){
-                        if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
-                            dashing = true;
-                            aggressive = true;
-                            dashTime = 0.0f;
-                        }
-                        else{
-                            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
-                            enemyAnimator.SetTrigger("walk");
-                        }
+                    if(!close && (inRange(2))){
+                        transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
+                        enemyAnimator.SetTrigger("run");
+                        waitForAttack = 0.0f;
                     }
                     else{
-                        if(inRange(1)){
-                            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
-                            enemyAnimator.SetTrigger("walk");
+                        if(!close){
+                            close = true;
                         }
-                        else{
-                            if(!inRange(0.5f)){
-                                transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
+                    }
+
+                    if(close){
+                        if(!noRunAnim()){
+                            enemyAnimator.SetTrigger("stop_running");
+                        }
+                        if(waitForAttack <= 3){
+                            if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
+                                dashing = true;
+                                aggressive = true;
+                                dashTime = 0.0f;
+                            }
+                            else{
+                                transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
                                 enemyAnimator.SetTrigger("walk");
                             }
                         }
+                        else{
+                            if(inRange(1)){
+                                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+                                enemyAnimator.SetTrigger("walk");
+                            }
+                            else{
+                                if(!inRange(0.5f)){
+                                    transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
+                                    enemyAnimator.SetTrigger("walk");
+                                }
+                            }
+                        }
+                    }
+
+                    if(close && (inRange(3))){
+                        close = false;
                     }
                 }
+            }
+            
+            Combat();
 
-                if(close && (inRange(3))){
-                    close = false;
-                }
+            if(defenseTime >= 1){
+                defenseTime = 0.0f;
             }
         }
-        
-        Combat();
-
-        if(defenseTime >= 1){
-            defenseTime = 0.0f;
-        }
-
-
     }
 
     void Combat(){
@@ -164,11 +173,17 @@ public class EnemyAI : MonoBehaviour{
 
         if(playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            if (!espadazo)
+            {   
+                swordAudio.Play();
+                espadazo = true;
+            }
             blockTime = 0.0f;
         }
         else if(!noBlockingAnim() && blockTime > 1 && blocking){
             enemyAnimator.SetTrigger("disblock");
             blocking = false;
+            espadazo = false;
         }
 
         if(comboNum > 0 && resetCombo >= 0.75f){
@@ -176,6 +191,34 @@ public class EnemyAI : MonoBehaviour{
             attackTime = 0.0f;
             enemyAnimator.SetTrigger("reset");
         }
+
+        //Sonidos espada
+        if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
+            if (!espadazo)
+            {   
+                swordAudio.Play();
+                espadazo = true;
+            }
+        }
+        else espadazo = false;
+
+        if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+            if (!espadazo_hor)
+            {   
+                swordAudio.Play();
+                espadazo_hor = true;
+            }
+        }
+        else espadazo_hor = false;
+
+        if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
+            if (!last_combo)
+            {   
+                swordAudio.Play();
+                last_combo = true;
+            }
+        }
+        else last_combo = false;
     }
 
     public void dash(){
@@ -315,5 +358,10 @@ public class EnemyAI : MonoBehaviour{
         aggressiveCooldown += Time.deltaTime;
 
         resetCombo += Time.deltaTime;
+    }
+
+    void startDuel()
+    {
+        hasStart = true;
     }
 }
