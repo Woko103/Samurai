@@ -35,6 +35,7 @@ void OnTriggerEnter(Collider col){
                     hitTimeEnemy = 0.0f;
                     
                     if(enemy.currentHealth == 0){
+                        enemy.isDead = true;
                         enemyAnimator.SetTrigger("death");
                         Invoke("victory", 2.5f);
                     }
@@ -60,6 +61,7 @@ void OnTriggerEnter(Collider col){
                 }
 
                 if(player.currentHealth == 0){
+                    player.isDead = true;
                     player.animator.SetTrigger("death");
                     Invoke("gameOver", 2.5f);
                 }

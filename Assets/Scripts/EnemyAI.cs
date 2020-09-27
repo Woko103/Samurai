@@ -32,6 +32,7 @@ public class EnemyAI : MonoBehaviour{
     public HealthBar healthBar;
     public float maxHealth;
     public float currentHealth;
+    public bool isDead = false;
 
     [Header("Swords & RigidBody")]
     public Animator enemyAnimator;
@@ -57,45 +58,47 @@ public class EnemyAI : MonoBehaviour{
 
         actulizeTimers();
 
-        if(dashing){
-            dash();
-        }
-        else{
-            if(!close && (inRange(2))){
-                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
-                waitForAttack = 0.0f;
+        if(!isDead){
+            if(dashing){
+                dash();
             }
             else{
-                if(!close){
-                    close = true;
-                }
-            }
-
-            if(close){
-                if(waitForAttack <= 3){
-                    if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
-                        dashing = true;
-                        aggressive = true;
-                        dashTime = 0.0f;
-                    }
-                    else{
-                        transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
-                    }
+                if(!close && (inRange(2))){
+                    transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
+                    waitForAttack = 0.0f;
                 }
                 else{
-                    if(inRange(1)){
-                        transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+                    if(!close){
+                        close = true;
+                    }
+                }
+
+                if(close){
+                    if(waitForAttack <= 3){
+                        if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
+                            dashing = true;
+                            aggressive = true;
+                            dashTime = 0.0f;
+                        }
+                        else{
+                            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * 1.5f;
+                        }
                     }
                     else{
-                        if(!inRange(0.5f)){
-                            transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
+                        if(inRange(1)){
+                            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
+                        }
+                        else{
+                            if(!inRange(0.5f)){
+                                transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
+                            }
                         }
                     }
                 }
-            }
 
-            if(close && (inRange(3))){
-                close = false;
+                if(close && (inRange(3))){
+                    close = false;
+                }
             }
         }
         

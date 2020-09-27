@@ -31,6 +31,7 @@ public class PlayerActions : MonoBehaviour
     public HealthBar healthBar;
     public float maxHealth;
     public float currentHealth;
+    public bool isDead = false;
 
     [Header("Other")]
     public Animator animator;
@@ -76,69 +77,47 @@ public class PlayerActions : MonoBehaviour
             dSpeed = dashSpeed;
         }
         
-        if ((Input.GetKey("w") && !dashing) || (dashing && direction == 'w')){
-            transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run * dSpeed;
-            if(!dashing){
-                //animator.SetTrigger("walk");
-                lastKey = 'w';
+        if(!isDead){
+            if ((Input.GetKey("w") && !dashing) || (dashing && direction == 'w')){
+                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run * dSpeed;
+                if(!dashing){
+                    lastKey = 'w';
+                }
             }
-        }
-        else if ((Input.GetKey("s") && !dashing) || (dashing && (direction == 's' || direction == '-'))){
-            transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * movementSpeed * run * dSpeed;
-            if(!dashing){
-                //animator.SetTrigger("walk");
-                lastKey = 's';
+            else if ((Input.GetKey("s") && !dashing) || (dashing && (direction == 's' || direction == '-'))){
+                transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * movementSpeed * run * dSpeed;
+                if(!dashing){
+                    lastKey = 's';
+                }
             }
-        }
 
-        if ((Input.GetKey("a") && !dashing) || (dashing && direction == 'a')){
-            transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed * run * dSpeed;
-            if(!dashing){
-                //animator.SetTrigger("walk");
-                lastKey = 'a';
+            if ((Input.GetKey("a") && !dashing) || (dashing && direction == 'a')){
+                transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed * run * dSpeed;
+                if(!dashing){
+                    lastKey = 'a';
+                }
             }
-        }
-        else if ((Input.GetKey("d") && !dashing) || (dashing && direction == 'd')){
-            transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed * run * dSpeed;
-            if(!dashing){
-                //animator.SetTrigger("walk");
-                lastKey = 'd';
+            else if ((Input.GetKey("d") && !dashing) || (dashing && direction == 'd')){
+                transform.position += transform.TransformDirection(Vector3.right) * Time.deltaTime * movementSpeed * run * dSpeed;
+                if(!dashing){
+                    lastKey = 'd';
+                }
             }
-        }
 
-        if((Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")) && 
-        !Input.GetKey(KeyCode.LeftShift)){
-            animator.SetTrigger("walk");
-        }
+            Animations();
 
-        if(Input.GetKeyDown(KeyCode.LeftShift) && 
-        (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
-            animator.SetTrigger("run");
-        }
+            if(!dashing && dashCooldown >= 2.5f && Input.GetKeyDown(KeyCode.LeftAlt)){
+                dashTime = 0;
+                dashing = true;
+                animator.SetTrigger("dash");
+                direction = lastKey;
+            }
 
-        if(Input.GetKey(KeyCode.LeftShift) && 
-        (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))){
-            animator.SetTrigger("run");
-        }
-
-        if(Input.GetKeyUp(KeyCode.LeftShift) || (Input.GetKey(KeyCode.LeftShift) && 
-        (Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")))){
-            animator.SetTrigger("stop_running");
-        }
-
-        if(Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")){
-            animator.SetTrigger("stop_moving");
-        }
-
-        if(!dashing && dashCooldown >= 2.5f && Input.GetKey(KeyCode.LeftAlt)){
-            dashTime = 0;
-            dashing = true;
-            direction = lastKey;
-        }
-
-        if(dashing && dashTime >= 0.15f){
-            dashing = false;
-            dashCooldown = 0;
+            if(dashing && dashTime >= 0.15f){
+                dashing = false;
+                dashCooldown = 0;
+                animator.SetTrigger("stop_moving");
+            }
         }
 
         yaw += rotationY * Input.GetAxis("Mouse X");
@@ -228,6 +207,32 @@ public class PlayerActions : MonoBehaviour
             transform.position = smoothedPosition;
 
             transform.LookAt(enemy);
+        }
+    }
+
+    void Animations(){
+        if((Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")) && 
+        !Input.GetKey(KeyCode.LeftShift)){
+            animator.SetTrigger("walk");
+        }
+
+        if(Input.GetKeyDown(KeyCode.LeftShift) && 
+        (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
+            animator.SetTrigger("run");
+        }
+
+        if(Input.GetKey(KeyCode.LeftShift) && 
+        (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))){
+            animator.SetTrigger("run");
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftShift) || (Input.GetKey(KeyCode.LeftShift) && 
+        (Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")))){
+            animator.SetTrigger("stop_running");
+        }
+
+        if(Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")){
+            animator.SetTrigger("stop_moving");
         }
     }
 }
