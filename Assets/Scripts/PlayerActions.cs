@@ -18,14 +18,15 @@ public class PlayerActions : MonoBehaviour
     private char direction = '-';
     private char lastKey = '-';
     private bool dashing = false;
+    public AudioSource dashAudio;
     
     [Header("Combo")]
     private int comboNum;
     private float reset;
     private float resetTime;
     private bool espadazo = false;
-    private bool espadazo_hor = false;
-    private bool last_combo = false;
+    //private bool espadazo_hor = false;
+    //private bool last_combo = false;
     public AudioSource swordAudio;
     private bool blocking = false;
 
@@ -43,6 +44,7 @@ public class PlayerActions : MonoBehaviour
     [Header("Other")]
     public Animator animator;
     public GameObject intro;
+    public GameObject menuPausa;
     private bool hasStart;
 
     void Start(){
@@ -127,6 +129,7 @@ public class PlayerActions : MonoBehaviour
                 dashing = true;
                 animator.SetTrigger("dash");
                 direction = lastKey;
+                dashAudio.Play();
             }
 
             if(dashing && dashTime >= 0.15f){
@@ -165,28 +168,51 @@ public class PlayerActions : MonoBehaviour
             animator.SetTrigger("disblock");
             blocking = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 3)
+        else if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             if(animator.GetCurrentAnimatorStateInfo(0).IsName("walk") || 
             animator.GetCurrentAnimatorStateInfo(0).IsName("run")){
                 animator.SetTrigger("stop_moving");
             }
-            if (comboNum == 0)
+            //if (comboNum == 0)
                 animator.SetTrigger("espadazo");
-            else if (comboNum == 1)
-                animator.SetTrigger("espadazo_hor");
-            else if (comboNum == 2)
-                animator.SetTrigger("last_combo");
-
-            comboNum++;
-            reset = 0f;
+            //else if (comboNum == 1)
+            //    animator.SetTrigger("espadazo_hor");
+            //else if (comboNum == 2)
+            //    animator.SetTrigger("last_combo");
+//
+            //comboNum++;
+            //reset = 0f;
         }
 
-        if (comboNum > 0)
-        {
-            reset += Time.deltaTime;
-            if (reset > resetTime)
+        //if (comboNum > 0)
+        //{
+        //    reset += Time.deltaTime;
+        //    if (reset > resetTime)
+        //    {
+        //        
+        //    
+        //        comboNum = 0;
+        //    }
+        //}
+//
+        //if (comboNum == 3)
+        //{
+        //    resetTime = 3f;
+        //    comboNum = 0;
+        //}
+        //else
+        //{
+        //    resetTime = 0.4f;
+        //}
+
+        //Sonidos espada
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
+            if (!espadazo)
             {
+                swordAudio.Play();
+                espadazo = true;
+
                 if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") && 
                 (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                     animator.SetTrigger("run");
@@ -200,61 +226,40 @@ public class PlayerActions : MonoBehaviour
                 else {
                     animator.SetTrigger("reset");
                 }
-            
-                comboNum = 0;
-            }
-        }
-
-        if (comboNum == 3)
-        {
-            resetTime = 3f;
-            comboNum = 0;
-        }
-        else
-        {
-            resetTime = 0.4f;
-        }
-
-        //Sonidos espada
-        if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
-            if (!espadazo)
-            {   
-                swordAudio.Play();
-                espadazo = true;
             }
         }
         else espadazo = false;
 
-        if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
-            if (!espadazo_hor)
-            {   
-                swordAudio.Play();
-                espadazo_hor = true;
-            }
-        }
-        else espadazo_hor = false;
-
-        if(animator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
-            if (!last_combo)
-            {   
-                swordAudio.Play();
-                last_combo = true;
-            }
-            if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") && 
-                (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
-                animator.SetTrigger("run");
-                running = true;
-            }
-            else if(!animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && 
-            (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
-                animator.SetTrigger("walk");
-                walk = true;
-            }
-            else {
-                animator.SetTrigger("reset");
-            }
-        }
-        else last_combo = false;
+        //if(animator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+        //    if (!espadazo_hor)
+        //    {   
+        //        swordAudio.Play();
+        //        espadazo_hor = true;
+        //    }
+        //}
+        //else espadazo_hor = false;
+//
+        //if(animator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
+        //    if (!last_combo)
+        //    {   
+        //        swordAudio.Play();
+        //        last_combo = true;
+        //    }
+        //    if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") && 
+        //        (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
+        //        animator.SetTrigger("run");
+        //        running = true;
+        //    }
+        //    else if(!animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && 
+        //    (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
+        //        animator.SetTrigger("walk");
+        //        walk = true;
+        //    }
+        //    else {
+        //        animator.SetTrigger("reset");
+        //    }
+        //}
+        //else last_combo = false;
 
     }
 
@@ -315,5 +320,6 @@ public class PlayerActions : MonoBehaviour
     {
         intro.SetActive(false);
         hasStart = true;
+        menuPausa.SetActive(true);
     }
 }

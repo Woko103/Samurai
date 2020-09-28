@@ -15,6 +15,9 @@ public PlayerActions player;
 public Animator enemyAnimator;
 public ParticleSystem particle;
 
+public AudioSource swordClashAudio;
+public AudioSource deathSound;
+
 void Update(){
     hitTimePlayer += Time.deltaTime;
     hitTimeEnemy += Time.deltaTime;
@@ -37,6 +40,7 @@ void OnTriggerEnter(Collider col){
                     if(enemy.currentHealth == 0){
                         enemy.isDead = true;
                         enemyAnimator.SetTrigger("death");
+                        deathSound.Play();
                         Invoke("victory", 2.5f);
                     }
                 }
@@ -63,6 +67,7 @@ void OnTriggerEnter(Collider col){
                 if(player.currentHealth == 0){
                     player.isDead = true;
                     player.animator.SetTrigger("death");
+                    deathSound.Play();
                     Invoke("gameOver", 2.5f);
                 }
             }
@@ -83,6 +88,7 @@ void OnTriggerEnter(Collider col){
 
     private IEnumerator Part(){
         particle.gameObject.SetActive(true);
+        swordClashAudio.Play();
         yield return new WaitForSeconds(0.5f);
         particle.gameObject.SetActive(false);
     }

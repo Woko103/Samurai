@@ -23,6 +23,7 @@ public class EnemyAI : MonoBehaviour{
     private bool dashing = false;
     private bool aggressive = false;
     private float aggressiveCooldown = 10;
+    public AudioSource dashAudio;
 
     [Header("Combo")]
     private int comboNum;
@@ -174,8 +175,7 @@ public class EnemyAI : MonoBehaviour{
         if(playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
             if (!espadazo)
-            {   
-                swordAudio.Play();
+            {
                 espadazo = true;
             }
             blockTime = 0.0f;
@@ -225,6 +225,7 @@ public class EnemyAI : MonoBehaviour{
         if(dashing){
             if(dashTime < 0.15f){
                 enemyAnimator.SetTrigger("dash");
+                dashAudio.Play();
                 if(aggressive){
                     transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * dashSpeed;
                 }
