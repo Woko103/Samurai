@@ -48,6 +48,7 @@ public class PlayerActions : MonoBehaviour
     private bool hasStart;
 
     void Start(){
+        Cursor.lockState = CursorLockMode.Locked;
         Invoke("startDuel", 7.08f);
         currentHealth = maxHealth;
         healthBar.setMaxHealth(maxHealth);
