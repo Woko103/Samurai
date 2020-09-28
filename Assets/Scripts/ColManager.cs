@@ -29,7 +29,7 @@ void OnTriggerEnter(Collider col){
                 if(!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
                 !enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("block")){
                     //Debug.Log("Enemy life: " + enemy.life);
-                    enemy.currentHealth -= 25;
+                    enemy.currentHealth -= 1;
                     enemy.healthBar.setHealth(enemy.currentHealth);
                     //Debug.Log("Enemy life: " + enemy.life);
                     hitTimeEnemy = 0.0f;
@@ -54,7 +54,7 @@ void OnTriggerEnter(Collider col){
                 //Debug.Log("Player life: " + player.life);
                 if(!player.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") && 
                 !player.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
-                    player.currentHealth -= 25;
+                    player.currentHealth -= 1;
                     player.healthBar.setHealth(player.currentHealth);
                     //Debug.Log("Player life: " + player.life);
                     hitTimePlayer = 0.0f;

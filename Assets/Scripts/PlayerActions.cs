@@ -8,6 +8,8 @@ public class PlayerActions : MonoBehaviour
     public float rotationY;
     public float smoothSpeed;
     private float yaw = 0.0f;
+    private bool walk = false;
+    private bool running = false;
     
     [Header("Dash")]
     public float dashSpeed;
@@ -25,6 +27,7 @@ public class PlayerActions : MonoBehaviour
     private bool espadazo_hor = false;
     private bool last_combo = false;
     public AudioSource swordAudio;
+    private bool blocking = false;
 
     [Header("Auto-Focus")]
     //private bool focus = false;
@@ -90,7 +93,7 @@ public class PlayerActions : MonoBehaviour
             dSpeed = dashSpeed;
         }
         
-        if(!isDead){
+        if(!isDead && !blocking){
             if ((Input.GetKey("w") && !dashing) || (dashing && direction == 'w')){
                 transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed * run * dSpeed;
                 if(!dashing){
@@ -129,11 +132,14 @@ public class PlayerActions : MonoBehaviour
             if(dashing && dashTime >= 0.15f){
                 dashing = false;
                 dashCooldown = 0;
-                if(Input.GetKey(KeyCode.LeftShift)){
+                if(Input.GetKey(KeyCode.LeftShift) && 
+                (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                     animator.SetTrigger("run");
+                    running = true;
                 }
-                else if(Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d")){
+                else if((Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                     animator.SetTrigger("walk");
+                    walk = true;
                 }
                 else {
                     animator.SetTrigger("stop_moving");
@@ -148,16 +154,23 @@ public class PlayerActions : MonoBehaviour
 
     void Combat()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
+        if (Input.GetKeyDown(KeyCode.Mouse1) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run")){
+            if(animator.GetCurrentAnimatorStateInfo(0).IsName("walk")){
+                animator.SetTrigger("stop_moving");
+            }
             animator.SetTrigger("block");
+            blocking = true;
         }
-        if (Input.GetKeyUp(KeyCode.Mouse1))
-        {
+        if (Input.GetKeyUp(KeyCode.Mouse1) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run")){
             animator.SetTrigger("disblock");
+            blocking = false;
         }
         else if (Input.GetKeyDown(KeyCode.Mouse0) && comboNum < 3)
         {
+            if(animator.GetCurrentAnimatorStateInfo(0).IsName("walk") || 
+            animator.GetCurrentAnimatorStateInfo(0).IsName("run")){
+                animator.SetTrigger("stop_moving");
+            }
             if (comboNum == 0)
                 animator.SetTrigger("espadazo");
             else if (comboNum == 1)
@@ -174,11 +187,15 @@ public class PlayerActions : MonoBehaviour
             reset += Time.deltaTime;
             if (reset > resetTime)
             {
-                if(Input.GetKey(KeyCode.LeftShift)){
+                if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") && 
+                (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                     animator.SetTrigger("run");
+                    running = true;
                 }
-                else if(Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d")){
+                else if(!animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && 
+                (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                     animator.SetTrigger("walk");
+                    walk = true;
                 }
                 else {
                     animator.SetTrigger("reset");
@@ -223,11 +240,15 @@ public class PlayerActions : MonoBehaviour
                 swordAudio.Play();
                 last_combo = true;
             }
-            if(Input.GetKey(KeyCode.LeftShift)){
+            if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") && 
+                (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                 animator.SetTrigger("run");
+                running = true;
             }
-            else if(Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d")){
+            else if(!animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && 
+            (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
                 animator.SetTrigger("walk");
+                walk = true;
             }
             else {
                 animator.SetTrigger("reset");
@@ -258,28 +279,35 @@ public class PlayerActions : MonoBehaviour
     //}
 
     void Animations(){
-        if((Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")) && 
+        if(!animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && 
+        (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")) && 
         !Input.GetKey(KeyCode.LeftShift)){
             animator.SetTrigger("walk");
+            walk = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.LeftShift) && 
+        if(Input.GetKeyDown(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") &&
         (Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d"))){
             animator.SetTrigger("run");
+            running = true;
         }
 
-        if(Input.GetKey(KeyCode.LeftShift) && 
+        if(Input.GetKey(KeyCode.LeftShift) && !animator.GetCurrentAnimatorStateInfo(0).IsName("run") &&
         (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))){
             animator.SetTrigger("run");
+            running = true;
         }
 
-        if(Input.GetKeyUp(KeyCode.LeftShift) || (Input.GetKey(KeyCode.LeftShift) && 
-        (Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")))){
+        if((Input.GetKeyUp(KeyCode.LeftShift) || (Input.GetKey(KeyCode.LeftShift)) && running && 
+        (!Input.GetKey("w") && !Input.GetKey("a") && !Input.GetKey("s") && !Input.GetKey("d")))){
             animator.SetTrigger("stop_running");
+            running = false;
         }
 
-        if(Input.GetKeyUp("w") || Input.GetKeyUp("a") || Input.GetKeyUp("s") || Input.GetKeyUp("d")){
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("walk") && walk &&
+        (!Input.GetKey("w") && !Input.GetKey("a") && !Input.GetKey("s") && !Input.GetKey("d"))){
             animator.SetTrigger("stop_moving");
+            walk = false;
         }
     }
 

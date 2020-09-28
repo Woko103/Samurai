@@ -73,7 +73,7 @@ public class EnemyAI : MonoBehaviour{
                     dash();
                 }
                 else{
-                    if(!close && (inRange(2))){
+                    if(!close && (inRange(2.5f))){
                         transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
                         enemyAnimator.SetTrigger("run");
                         waitForAttack = 0.0f;
@@ -89,7 +89,7 @@ public class EnemyAI : MonoBehaviour{
                             enemyAnimator.SetTrigger("stop_running");
                         }
                         if(waitForAttack <= 3){
-                            if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
+                            if(!inRange(3) && !dashing && aggressiveCooldown >= 10){
                                 dashing = true;
                                 aggressive = true;
                                 dashTime = 0.0f;
@@ -100,12 +100,12 @@ public class EnemyAI : MonoBehaviour{
                             }
                         }
                         else{
-                            if(inRange(1)){
+                            if(inRange(1.5f)){
                                 transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
                                 enemyAnimator.SetTrigger("walk");
                             }
                             else{
-                                if(!inRange(0.5f)){
+                                if(!inRange(1)){
                                     transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
                                     enemyAnimator.SetTrigger("walk");
                                 }
@@ -113,7 +113,7 @@ public class EnemyAI : MonoBehaviour{
                         }
                     }
 
-                    if(close && (inRange(3))){
+                    if(close && (inRange(3.5f))){
                         close = false;
                     }
                 }
@@ -128,7 +128,7 @@ public class EnemyAI : MonoBehaviour{
     }
 
     void Combat(){
-        if(!inRange(1) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing && !blocking && !attacking){
+        if(!inRange(1.5f) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing && !blocking && !attacking){
             if(comboNum == 0){
                 enemyAnimator.SetTrigger("espadazo");
                 comboNum++;
@@ -146,7 +146,7 @@ public class EnemyAI : MonoBehaviour{
             attackTime = 0.0f;
             attacking = true;
         }
-        else if(!inRange(1f) && noAnimations() && !dashing && !blocking && !attacking && 
+        else if(!inRange(1.5f) && noAnimations() && !dashing && !blocking && !attacking && 
         (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
         playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
             if((dashCooldown < 2.5f || defenseTime <= 0.3f)){
