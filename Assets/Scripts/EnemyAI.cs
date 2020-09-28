@@ -25,10 +25,6 @@ public class EnemyAI : MonoBehaviour{
     private float aggressiveCooldown = 10;
     public AudioSource dashAudio;
 
-    [Header("Combo")]
-    private int comboNum;
-    private float resetCombo = 0.0f;
-
     [Header("Life")]
     public HealthBar healthBar;
     public float maxHealth;
@@ -43,8 +39,6 @@ public class EnemyAI : MonoBehaviour{
     [Header("Audio")]
     public AudioSource swordAudio;
     private bool espadazo = false;
-    private bool espadazo_hor = false;
-    private bool last_combo = false;
 
     private bool close = false;
     private bool hasStart = false;
@@ -74,7 +68,7 @@ public class EnemyAI : MonoBehaviour{
                     dash();
                 }
                 else{
-                    if(!close && (inRange(2.5f))){
+                    if(!close && (inRange(2))){
                         transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed * runSpeed;
                         enemyAnimator.SetTrigger("run");
                         waitForAttack = 0.0f;
@@ -90,7 +84,7 @@ public class EnemyAI : MonoBehaviour{
                             enemyAnimator.SetTrigger("stop_running");
                         }
                         if(waitForAttack <= 3){
-                            if(!inRange(3) && !dashing && aggressiveCooldown >= 10){
+                            if(!inRange(2.5f) && !dashing && aggressiveCooldown >= 10){
                                 dashing = true;
                                 aggressive = true;
                                 dashTime = 0.0f;
@@ -101,12 +95,12 @@ public class EnemyAI : MonoBehaviour{
                             }
                         }
                         else{
-                            if(inRange(1.5f)){
+                            if(inRange(1)){
                                 transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * speed;
                                 enemyAnimator.SetTrigger("walk");
                             }
                             else{
-                                if(!inRange(1)){
+                                if(!inRange(0.7f)){
                                     transform.position += transform.TransformDirection(Vector3.back) * Time.deltaTime * speed;
                                     enemyAnimator.SetTrigger("walk");
                                 }
@@ -114,7 +108,7 @@ public class EnemyAI : MonoBehaviour{
                         }
                     }
 
-                    if(close && (inRange(3.5f))){
+                    if(close && (inRange(3))){
                         close = false;
                     }
                 }
@@ -129,27 +123,13 @@ public class EnemyAI : MonoBehaviour{
     }
 
     void Combat(){
-        if(!inRange(1.5f) && (attackTime >= 2f || comboNum > 0) && noAnimations() && !dashing && !blocking && !attacking){
-            if(comboNum == 0){
-                enemyAnimator.SetTrigger("espadazo");
-                comboNum++;
-                resetCombo = 0.0f;
-            }
-            else if(comboNum == 1){
-                enemyAnimator.SetTrigger("espadazo_hor");
-                comboNum++;
-            }
-            else{
-                enemyAnimator.SetTrigger("last_combo");
-                enemyAnimator.SetTrigger("reset");
-                comboNum = 0;
-            }
+        if(!inRange(1) && attackTime >= 1.5f && noAnimations() && !dashing && !blocking && !attacking){
+            enemyAnimator.SetTrigger("espadazo");
             attackTime = 0.0f;
             attacking = true;
         }
-        else if(!inRange(1.5f) && noAnimations() && !dashing && !blocking && !attacking && 
-        (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
-        playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal"))){
+        else if(!inRange(1) && noAnimations() && !dashing && !blocking && !attacking && 
+        playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
             if((dashCooldown < 2.5f || defenseTime <= 0.3f)){
                 blockTime = 0.0f;
                 blocking = true;
@@ -167,13 +147,13 @@ public class EnemyAI : MonoBehaviour{
             }
         }
 
-        if(noEspadazoAnim() && noEspadazoHorizAnim() && attacking){
+        if(noEspadazoAnim() && attacking){
             attacking = false;
             attackTime = 0.0f;
+            enemyAnimator.SetTrigger("reset");
         }
 
-        if(playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo") || 
-        playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
+        if(playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
             if (!espadazo)
             {
                 espadazo = true;
@@ -186,12 +166,6 @@ public class EnemyAI : MonoBehaviour{
             espadazo = false;
         }
 
-        if(comboNum > 0 && resetCombo >= 0.75f){
-            comboNum = 0;
-            attackTime = 0.0f;
-            enemyAnimator.SetTrigger("reset");
-        }
-
         //Sonidos espada
         if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
             if (!espadazo)
@@ -201,24 +175,6 @@ public class EnemyAI : MonoBehaviour{
             }
         }
         else espadazo = false;
-
-        if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
-            if (!espadazo_hor)
-            {   
-                swordAudio.Play();
-                espadazo_hor = true;
-            }
-        }
-        else espadazo_hor = false;
-
-        if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
-            if (!last_combo)
-            {   
-                swordAudio.Play();
-                last_combo = true;
-            }
-        }
-        else last_combo = false;
     }
 
     public void dash(){
@@ -269,8 +225,7 @@ public class EnemyAI : MonoBehaviour{
     }
 
     public bool noAnimations(){
-        if(noEspadazoAnim() && noEspadazoHorizAnim() && noBlockAnim() && noBlockingAnim() && noDisblockAnim()
-        && nolastComboAnim() && noDashAnim()){
+        if(noEspadazoAnim() && noBlockAnim() && noBlockingAnim() && noDisblockAnim() && noDashAnim()){
             return true;
         }
         return false;
@@ -278,22 +233,6 @@ public class EnemyAI : MonoBehaviour{
 
     public bool noEspadazoAnim(){
         if(!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo")){
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool noEspadazoHorizAnim(){
-        if(!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("espadazo_horizontal")){
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool nolastComboAnim(){
-        if(!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("last_combo")){
             return true;
         }
 
@@ -357,8 +296,6 @@ public class EnemyAI : MonoBehaviour{
         dashTime += Time.deltaTime;
         dashCooldown += Time.deltaTime;
         aggressiveCooldown += Time.deltaTime;
-
-        resetCombo += Time.deltaTime;
     }
 
     void startDuel()

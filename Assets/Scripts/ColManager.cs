@@ -45,7 +45,10 @@ void OnTriggerEnter(Collider col){
                     }
                 }
                 else{
-                    StartCoroutine(Part());
+                    if(enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("blocking") || 
+                    enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("block")){
+                        StartCoroutine(Part());
+                    }
                 }
             }
         }
@@ -62,13 +65,19 @@ void OnTriggerEnter(Collider col){
                     player.healthBar.setHealth(player.currentHealth);
                     //Debug.Log("Player life: " + player.life);
                     hitTimePlayer = 0.0f;
-                }
 
-                if(player.currentHealth == 0){
-                    player.isDead = true;
-                    player.animator.SetTrigger("death");
-                    deathSound.Play();
-                    Invoke("gameOver", 2.5f);
+                    if(player.currentHealth == 0){
+                        player.isDead = true;
+                        player.animator.SetTrigger("death");
+                        deathSound.Play();
+                        Invoke("gameOver", 2.5f);
+                    }
+                }
+                else{
+                    if(player.animator.GetCurrentAnimatorStateInfo(0).IsName("blocking") || 
+                    player.animator.GetCurrentAnimatorStateInfo(0).IsName("block")){
+                        StartCoroutine(Part());
+                    }
                 }
             }
         }
@@ -89,7 +98,7 @@ void OnTriggerEnter(Collider col){
     private IEnumerator Part(){
         particle.gameObject.SetActive(true);
         swordClashAudio.Play();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
         particle.gameObject.SetActive(false);
     }
 }
